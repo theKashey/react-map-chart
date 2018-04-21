@@ -1,0 +1,27 @@
+.initialClass {
+    transition-property: opacity;
+    transition-duration: 1s;
+
+    opacity: 0;
+}
+
+.selected {
+    opacity: 1;
+}
+
+.test-story {
+    width: 500px;
+    height: 500px;
+}
+
+.path {
+    transition-property: stroke-width;
+    transition-duration: 300ms;
+    stroke-width: 0;
+}
+
+.path:hover {
+    transition-property: stroke-width;
+    transition-duration: 300ms;
+    stroke-width: 3px;
+}
