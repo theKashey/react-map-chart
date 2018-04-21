@@ -1,7 +1,7 @@
 {
   "name": "react-map-chart",
   "version": "1.0.0",
-  "description": "Chose a country. From Map",
+  "description": "Chose a country. From the Map",
   "main": "dist/index.js",
   "types": "react-map-chart.d.ts",
   "scripts": {
@@ -16,7 +16,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/theKashey/react-svg-atlas.git"
+    "url": "git+https://github.com/theKashey/react-map-chart.git"
   },
   "keywords": [
     "react",
@@ -61,7 +61,7 @@
     "react-test-renderer": "^15.6.1",
     "storybook": "^1.0.0"
   },
-  "homepage": "https://github.com/theKashey/react-svg-atlas#readme",
+  "homepage": "https://github.com/theKashey/react-map-chart#readme",
   "dependencies": {
     "osme": "^1.2.4",
     "prop-types": "15.5.10",
