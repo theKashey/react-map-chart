@@ -5,49 +5,75 @@ import osme from 'osme';
 
 import { getShortestContour } from './shortestPath';
 import { mercator } from './mercator';
+import { gall } from './gall';
 
 import world from './data/world.json';
 
-const toPath = path => `M${path
-  .map(mercator)
+const projections = {
+  mercator,
+  gall,
+};
+
+const toPath = (path, projector) => `M${path
+  .map(projector.projection)
   .map(([x, y]) => [Math.round(x * 10) / 10, Math.round(y * 10) / 10])
   .map(([x, y]) => `${x},${y}`)
   .join(' L')
 }`;
-const toPaths = paths => getShortestContour(paths).map(toPath).join(' z ');
+const toPaths = (paths, projection) => getShortestContour(paths).map(x => toPath(x, projection)).join(' z ');
 
 export const codes = Object.keys(world.regions).reduce((acc, region) => [...acc, world.regions[region].property.iso3166], []);
 
-const convert = features => (
+const convert = (features, projection) => (
   features
-    .map(feature => ({
-      geometry: toPaths(feature.geometry.coordinates),
+    .map((feature, index) => ({
+      index,
+      geometry: toPaths(feature.geometry.coordinates, projection),
       properties: feature.properties,
       code: feature.properties.properties.iso3166,
     }))
 );
 
-let vector = 0;
+const defaultSorter = ({ data, hovered }) => (a, b) => {
+  if (hovered === a.code) {
+    return 1;
+  }
+  if (hovered === b.code) {
+    return -1;
+  }
+  if ((data[a.code] && data[b.code]) || (!data[a.code] && !data[b.code])) {
+    return a.index - b.index;
+  }
+  if (data[a.code]) {
+    return 1;
+  }
+  return -1;
+};
 
 class WorldChart extends Component {
   static propTypes = {
     data: PropTypes.objectOf(PropTypes.number),
     className: PropTypes.string,
     styler: PropTypes.func.isRequired,
+    sorter: PropTypes.func,
     native: PropTypes.bool,
+    hovered: PropTypes.string,
+
+    projection: PropTypes.oneOf(['mercator', 'gall']),
   };
 
   static defaultProps = {
     className: '',
     native: false,
+    hovered: null,
+    projection: 'mercator',
   };
 
-  state = {
-    vector: vector || (vector = convert(osme.parseData(world).features)),
-  };
+  rawVector = convert(osme.parseData(world).features, projections[this.props.projection]);
+  vector = null;
 
   renderData() {
-    const { vector } = this.state;
+    const { vector } = this;
     const { styler, data, native } = this.props;
 
     if (native) {
@@ -77,9 +103,11 @@ class WorldChart extends Component {
   }
 
   render() {
-    const { className } = this.props;
+    const { className, sorter, projection } = this.props;
+
+    this.vector = this.rawVector.slice().sort((sorter || defaultSorter)(this.props));
     return (
-      <svg viewBox="0 0 256 256" className={className}>
+      <svg viewBox={projections[projection].viewBox} className={className}>
         {this.renderData()}
       </svg>
     );

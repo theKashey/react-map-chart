@@ -11,12 +11,13 @@ function bound(value, optMin, optMax) {
 
 const degreesToRadians = deg => deg * (Math.PI / 180);
 
-
-export function mercator(latLng) {
-  const siny = bound(Math.sin(degreesToRadians(latLng[1])), -0.9999, 0.9999);
-  return [
-    pixelOrigin[0] + (latLng[0] * pixelsPerLonDegree),
-    // pixelOrigin[1] - (latLng[1] * pixelsPerLonDegree),
-    pixelOrigin[1] + (0.5 * Math.log((1 + siny) / (1 - siny)) * -pixelsPerLonRadian),
-  ];
-}
+export const mercator = {
+  projection: (latLng) => {
+    const siny = bound(Math.sin(degreesToRadians(latLng[1])), -0.9999, 0.9999);
+    return [
+      pixelOrigin[0] + (latLng[0] * pixelsPerLonDegree),
+      pixelOrigin[1] + (0.5 * Math.log((1 + siny) / (1 - siny)) * -pixelsPerLonRadian),
+    ];
+  },
+  viewBox: '0 8 266 190',
+};
