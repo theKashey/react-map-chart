@@ -8,6 +8,8 @@ declare module 'react-map-chart' {
 
         native?: boolean,
 
+        hovered?: string,
+
         styler: (value: number, code: string) => object
     }
 
