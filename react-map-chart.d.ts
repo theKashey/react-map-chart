@@ -10,6 +10,8 @@ declare module 'react-map-chart' {
 
         hovered?: string,
 
+        projection?: "mercator" | "gall",
+
         styler: (value: number, code: string) => object
     }
 
