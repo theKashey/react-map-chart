@@ -1,4 +1,7 @@
 # react-map-chart
+
+[![Greenkeeper badge](https://badges.greenkeeper.io/theKashey/react-map-chart.svg)](https://greenkeeper.io/)
+
 ----
 
 Simple component to display SVG based World Map. Uses [react-spring](https://github.com/drcmda/react-spring) to make stuff nicer.
