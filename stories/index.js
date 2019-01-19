@@ -1,9 +1,11 @@
 import React from 'react';
 import {storiesOf} from '@storybook/react';
-import Chart, {codes} from '../src';
+import Chart, {extractCodes} from '../src';
+import world from '../data/world';
+import russia from '../data/russia';
 import './story.css';
 
-const randomize = () => codes.reduce((acc, code) => {
+const randomize = () => extractCodes(world).reduce((acc, code) => {
   acc[code] = Math.random();
   return acc
 }, {});
@@ -34,13 +36,15 @@ class Interactive extends React.Component {
           className="test-story"
           hovered={this.state.hovered}
           projection="mercator"
+          geometry={world}
           data={this.state.codes}
-          styler={ () => ({ style:{fill:'#EEE', stroke:'#444', strokeWidth:0.3}})}
-         />
+          styler={() => ({style: {fill: '#EEE', stroke: '#444', strokeWidth: 0.3}})}
+        />
 
         <Chart
           className="test-story"
           hovered={this.state.hovered}
+          geometry={world}
           projection="gall"
           styler={(x, code) => ({
             className: 'path',
@@ -83,6 +87,7 @@ class Interactive extends React.Component {
 storiesOf('Map Chart', module)
   .add('smoke', () => <Chart
     className="test"
+    geometry={world}
     styler={(x, code, feature) => ({
       className: 'path',
       style: {
@@ -98,6 +103,45 @@ storiesOf('Map Chart', module)
       US: 1,
     }}
 
+  />)
+  .add('russia', () => <Chart
+    className="test"
+    geometry={russia}
+    styler={(x, code, feature) => ({
+      className: 'path',
+    })}
+  />)
+  .add('russia - albers', () => <Chart
+    className="test"
+    geometry={russia}
+    projection="albers"
+    projectionOptions={{
+      latLng: [50, -40],
+      phi: [50, 50]
+    }}
+    viewBox="50 0 600 500"
+    styler={(x, code, feature) => ({
+      className: 'path',
+      style: {
+        opacity: 0.5
+      }
+    })}
+  />)
+  .add('world - albers', () => <Chart
+    className="test"
+    geometry={world}
+    projection="albers"
+    projectionOptions={{
+      latLng: [0, -40],
+      phi: [50, 50]
+    }}
+    viewbox="-100 -100 2000 2000"
+    styler={(x, code, feature) => ({
+      className: 'path',
+      style: {
+        opacity: 0.5
+      }
+    })}
   />)
 
   .add('interactive', () => <Interactive/>)

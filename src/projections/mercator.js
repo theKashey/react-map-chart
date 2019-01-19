@@ -9,7 +9,7 @@ function bound(value, optMin, optMax) {
   return value;
 }
 
-const degreesToRadians = deg => deg * (Math.PI / 180);
+const degreesToRadians = deg => deg * .017453292519943295;
 
 export const mercator = {
   projection: (latLng) => {

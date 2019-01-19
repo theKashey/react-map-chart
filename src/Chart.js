@@ -4,37 +4,39 @@ import { Spring, animated } from 'react-spring';
 import osme from 'osme';
 
 import { getShortestContour } from './shortestPath';
-import { mercator } from './mercator';
-import { gall } from './gall';
-
-import world from './data/world.json';
+import { mercator } from './projections/mercator';
+import { gall } from './projections/gall';
+import { geo } from './projections/geo';
+import {albers} from './projections/albers';
 
 const projections = {
   mercator,
   gall,
+  geo,
+  albers,
 };
 
-const toPath = (path, projector) => `M${path
-  .map(projector.projection)
+const toPath = (path, projector, projectionOptions) => `M${path
+  .map(x => projector.projection(x, projectionOptions))
   .map(([x, y]) => [Math.round(x * 10) / 10, Math.round(y * 10) / 10])
   .map(([x, y]) => `${x},${y}`)
   .join(' L')
 }`;
-const toPaths = (paths, projection) => getShortestContour(paths).map(x => toPath(x, projection)).join(' z ');
+const toPaths = (paths, projection, projectionOptions) => getShortestContour(paths).map(x => toPath(x, projection, projectionOptions)).join(' z ');
 
-export const codes = Object.keys(world.regions).reduce((acc, region) => [...acc, world.regions[region].property.iso3166], []);
+export const extractCodes = geometry => Object.keys(geometry.regions).reduce((acc, region) => [...acc, geometry.regions[region].property.iso3166], []);
 
-const convert = (features, projection) => (
+const convert = (features, projection, projectionOptions) => (
   features
     .map((feature, index) => ({
       index,
-      geometry: toPaths(feature.geometry.coordinates, projection),
+      geometry: toPaths(feature.geometry.coordinates, projection, projectionOptions),
       properties: feature.properties,
       code: feature.properties.properties.iso3166,
     }))
 );
 
-const defaultSorter = ({ data, hovered }) => (a, b) => {
+const defaultSorter = ({ data = {}, hovered }) => (a, b) => {
   if (hovered === a.code) {
     return 1;
   }
@@ -52,14 +54,17 @@ const defaultSorter = ({ data, hovered }) => (a, b) => {
 
 class WorldChart extends Component {
   static propTypes = {
-    data: PropTypes.objectOf(PropTypes.number),
+    data: PropTypes.objectOf(PropTypes.number).isRequired,
     className: PropTypes.string,
     styler: PropTypes.func.isRequired,
     sorter: PropTypes.func,
     native: PropTypes.bool,
     hovered: PropTypes.string,
+    geometry: PropTypes.any.isRequired,
 
-    projection: PropTypes.oneOf(['mercator', 'gall']),
+    projection: PropTypes.oneOf(['mercator', 'gall', 'albers']),
+    projectionOptions: PropTypes.any,
+    viewbox: PropTypes.string,
   };
 
   static defaultProps = {
@@ -69,12 +74,12 @@ class WorldChart extends Component {
     projection: 'mercator',
   };
 
-  rawVector = convert(osme.parseData(world).features, projections[this.props.projection]);
+  rawVector = convert(osme.parseData(this.props.geometry).features, projections[this.props.projection], this.props.projectionOptions);
   vector = null;
 
   renderData() {
     const { vector } = this;
-    const { styler, data, native } = this.props;
+    const { styler, data = {}, native } = this.props;
 
     if (native) {
       return (vector && vector
@@ -103,11 +108,11 @@ class WorldChart extends Component {
   }
 
   render() {
-    const { className, sorter, projection } = this.props;
+    const { className, sorter, projection, viewbox } = this.props;
 
     this.vector = this.rawVector.slice().sort((sorter || defaultSorter)(this.props));
     return (
-      <svg viewBox={projections[projection].viewBox} className={className}>
+      <svg viewBox={viewbox || projections[projection].viewBox} className={className}>
         {this.renderData()}
       </svg>
     );

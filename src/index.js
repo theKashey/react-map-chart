@@ -1,7 +1,7 @@
-import Chart, { codes } from './Chart';
+import Chart, { extractCodes } from './Chart';
 
 export {
-  codes,
+  extractCodes,
 };
 
 export default Chart;

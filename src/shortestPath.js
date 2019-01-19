@@ -1,12 +1,14 @@
+const WORLD = 360;
+const HALF_WORLD = WORLD*0.5;
+
 function getShortestPath(contour) {
-  const halfWorld = 180;
   const result = [contour[0]];
   let point = contour[0];
 
   for (let i = 1, l = contour.length; i < l; ++i) {
     let delta = point[0] - contour[i][0];
-    if (Math.abs(delta) > halfWorld) {
-      delta = delta < 0 ? -360 : 360;
+    if (Math.abs(delta) > HALF_WORLD) {
+      delta = delta < 0 ? -WORLD : WORLD;
     } else {
       delta = 0;
     }

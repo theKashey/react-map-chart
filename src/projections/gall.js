@@ -2,7 +2,7 @@ const TILE_SIZE = 256;
 const pixelOrigin = [TILE_SIZE / 2, TILE_SIZE / 2];
 const pixelsPerLonDegree = TILE_SIZE / 360;
 
-const degreesToRadians = deg => deg * (Math.PI / 180);
+const degreesToRadians = deg => deg * .017453292519943295;
 
 const Y = (1 + (Math.sqrt(2) * 0.5));
 
