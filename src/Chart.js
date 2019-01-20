@@ -64,7 +64,7 @@ class WorldChart extends Component {
 
     projection: PropTypes.oneOf(['mercator', 'gall', 'albers']),
     projectionOptions: PropTypes.any,
-    viewbox: PropTypes.string,
+    viewBox: PropTypes.string,
   };
 
   static defaultProps = {
@@ -108,11 +108,11 @@ class WorldChart extends Component {
   }
 
   render() {
-    const { className, sorter, projection, viewbox } = this.props;
+    const { className, sorter, projection, viewBox } = this.props;
 
     this.vector = this.rawVector.slice().sort((sorter || defaultSorter)(this.props));
     return (
-      <svg viewBox={viewbox || projections[projection].viewBox} className={className}>
+      <svg viewBox={viewBox || projections[projection].viewBox} className={className}>
         {this.renderData()}
       </svg>
     );
