@@ -1,6 +1,6 @@
 {
   "name": "react-map-chart",
-  "version": "2.0.1",
+  "version": "2.1.0",
   "description": "Chose a country. From the Map",
   "main": "dist/index.js",
   "types": "react-map-chart.d.ts",
